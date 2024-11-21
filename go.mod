@@ -1,3 +1,5 @@
 module github.com/floatyun/gorm_logger
 
-go 1.22.8
+go 1.22
+
+require gorm.io/gorm v1.25.12
