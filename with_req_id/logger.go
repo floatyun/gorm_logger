@@ -11,7 +11,7 @@ import (
 )
 
 /*
-基本就是把gorm/logger/logger.go的logger实现复制了一下。然后把原本的换行符\n改成了\t,之后原本的各类的格式化字符串，增加了一个req_id:%s的占位符。之后各个打印日志相关的函数，实际打印的时候，从context中获取reqId，进行填充。
+基本就是把gorm/logger/logger.go的logger实现复制了一下。然后把原本的换行符\n改成了\t,之后原本的各类的格式化字符串，增加了一个req_id:%q的占位符。之后各个打印日志相关的函数，实际打印的时候，从context中获取reqId，进行填充。
 创建的时候，增加了一个函数参数ReqIdGetter,用于设定获取reqId的方法。
 */
 
@@ -32,21 +32,21 @@ func AlwaysEmptyReqId(ctx context.Context) string {
 // New initialize logger
 func New(writer logger.Writer, config logger.Config, getter ReqIdGetter) logger.Interface {
 	var (
-		infoStr      = "%s\t[info] req_id:%s "                   // file_with_line_number, req_id
-		warnStr      = "%s\t[warn] req_id:%s "                   // file_with_line_number, req_id
-		errStr       = "%s\t[error] req_id:%s "                  // file_with_line_number, req_id
-		traceStr     = "%s\t[%.3fms] [rows:%v] %s req_id:%s "    // file_with_line_number, elapsed_time, rows, sql, req_id
-		traceWarnStr = "%s %s\t[%.3fms] [rows:%v] %s req_id:%s " // file_with_line_number, 慢sql提示消息, eplased_time, rows, sql  慢sql预警
-		traceErrStr  = "%s %s\t[%.3fms] [rows:%v] %s req_id:%s " // file_with_line_number, err, eplased_time, rows, sql
+		infoStr      = "%s\t[info] req_id:%q "                   // file_with_line_number, req_id
+		warnStr      = "%s\t[warn] req_id:%q "                   // file_with_line_number, req_id
+		errStr       = "%s\t[error] req_id:%q "                  // file_with_line_number, req_id
+		traceStr     = "%s\t[%.3fms] [rows:%v] %s req_id:%q "    // file_with_line_number, elapsed_time, rows, sql, req_id
+		traceWarnStr = "%s %s\t[%.3fms] [rows:%v] %s req_id:%q " // file_with_line_number, 慢sql提示消息, eplased_time, rows, sql  慢sql预警
+		traceErrStr  = "%s %s\t[%.3fms] [rows:%v] %s req_id:%q " // file_with_line_number, err, eplased_time, rows, sql
 	)
 
 	if config.Colorful {
-		infoStr = logger.Green + "%s\t" + logger.Reset + logger.Green + "[info] req_id:%s " + logger.Reset
-		warnStr = logger.BlueBold + "%s\t" + logger.Reset + logger.Magenta + "[warn] req_id:%s " + logger.Reset
-		errStr = logger.Magenta + "%s\t" + logger.Reset + logger.Red + "[error] req_id:%s " + logger.Reset
-		traceStr = logger.Green + "%s\t" + logger.Reset + logger.Yellow + "[%.3fms] " + logger.BlueBold + "[rows:%v]" + logger.Reset + " %s req_id:%s "
-		traceWarnStr = logger.Green + "%s " + logger.Yellow + "%s\t" + logger.Reset + logger.RedBold + "[%.3fms] " + logger.Yellow + "[rows:%v]" + logger.Magenta + " %s req_id:%s " + logger.Reset
-		traceErrStr = logger.RedBold + "%s " + logger.MagentaBold + "%s\t" + logger.Reset + logger.Yellow + "[%.3fms] " + logger.BlueBold + "[rows:%v]" + logger.Reset + " %s req_id:%s "
+		infoStr = logger.Green + "%s\t" + logger.Reset + logger.Green + "[info] req_id:%q " + logger.Reset
+		warnStr = logger.BlueBold + "%s\t" + logger.Reset + logger.Magenta + "[warn] req_id:%q " + logger.Reset
+		errStr = logger.Magenta + "%s\t" + logger.Reset + logger.Red + "[error] req_id:%q " + logger.Reset
+		traceStr = logger.Green + "%s\t" + logger.Reset + logger.Yellow + "[%.3fms] " + logger.BlueBold + "[rows:%v]" + logger.Reset + " %s req_id:%q "
+		traceWarnStr = logger.Green + "%s " + logger.Yellow + "%s\t" + logger.Reset + logger.RedBold + "[%.3fms] " + logger.Yellow + "[rows:%v]" + logger.Magenta + " %s req_id:%q " + logger.Reset
+		traceErrStr = logger.RedBold + "%s " + logger.MagentaBold + "%s\t" + logger.Reset + logger.Yellow + "[%.3fms] " + logger.BlueBold + "[rows:%v]" + logger.Reset + " %s req_id:%q "
 	}
 	if getter == nil {
 		getter = AlwaysEmptyReqId
